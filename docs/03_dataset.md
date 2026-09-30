@@ -28,3 +28,7 @@
 - Procedures: sp_<name>
 - Triggers: trg_<table>_<action>
 - SQL files: NN_<description>.sql
+## PostgreSQL users
+
+- `postgres` : superuser (system default)
+- `loranos`  : project superuser (local dev), used for all project work
