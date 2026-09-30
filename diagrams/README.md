@@ -1,6 +1,6 @@
 # Diagrams
 
-Contiendra :
-- MCD (modèle conceptuel de données)
-- MLD (modèle logique de données)
-- Schéma relationnel final
+Will contain:
+- Conceptual Data Model (CDM)
+- Logical Data Model (LDM)
+- Final relational schema

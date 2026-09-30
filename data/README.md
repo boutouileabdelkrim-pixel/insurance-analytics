@@ -1,7 +1,7 @@
 # Data
 
-- `raw/`       : fichiers CSV source (non versionnés)
-- `processed/` : exports éventuels (non versionnés)
+- `raw/`       : source CSV files (not versioned)
+- `processed/` : possible exports (not versioned)
 
-Les fichiers CSV ne sont PAS poussés sur GitHub (voir .gitignore),
-uniquement conservés en local.
+CSV files are NOT pushed to GitHub (see .gitignore),
+kept locally only.

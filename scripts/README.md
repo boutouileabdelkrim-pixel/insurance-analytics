@@ -1,4 +1,4 @@
-# Scripts utilitaires
+# Utility Scripts
 
-Scripts shell auxiliaires (facultatif).
-Aucun script pour l'instant.
+Auxiliary shell scripts (optional).
+No script for now.
