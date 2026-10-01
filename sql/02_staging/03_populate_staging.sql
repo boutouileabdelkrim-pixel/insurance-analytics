@@ -4,13 +4,7 @@
 -- Phase 6 — Data Quality and Cleaning
 -- ============================================================
 --
--- Cleaning rules:
---   1. Empty strings -> NULL
---   2. Dates: parse 3 formats (YYYY-MM-DD, DD/MM/YYYY, DD-MM-YYYY)
---   3. Currency: extract number, convert USD to EUR (rate 0.92)
---   4. gender: M/Male -> M, F/Female -> F, empty -> NULL
---   5. city_postal: split on '_' into city and postal_code
---   6. year, previous_claims: cast '2018.0' -> 2018
+-- Depends on: 00_date_helpers.sql (staging.parse_date)
 -- ============================================================
 
 BEGIN;
@@ -31,21 +25,8 @@ SELECT
     client_id,
     client_name,
     product,
-    -- start_date: 3 formats
-    CASE
-        WHEN start_date ~ '^\d{4}-\d{2}-\d{2}$' THEN start_date::date
-        WHEN start_date ~ '^\d{2}/\d{2}/\d{4}$' THEN to_date(start_date, 'DD/MM/YYYY')
-        WHEN start_date ~ '^\d{2}-\d{2}-\d{4}$' THEN to_date(start_date, 'DD-MM-YYYY')
-        ELSE NULL
-    END,
-    -- end_date: 3 formats
-    CASE
-        WHEN end_date ~ '^\d{4}-\d{2}-\d{2}$' THEN end_date::date
-        WHEN end_date ~ '^\d{2}/\d{2}/\d{4}$' THEN to_date(end_date, 'DD/MM/YYYY')
-        WHEN end_date ~ '^\d{2}-\d{2}-\d{4}$' THEN to_date(end_date, 'DD-MM-YYYY')
-        ELSE NULL
-    END,
-    -- annual_premium_eur: extract number, USD -> EUR
+    staging.parse_date(start_date),
+    staging.parse_date(end_date),
     CASE
         WHEN annual_premium IS NULL OR annual_premium = '' THEN NULL
         WHEN annual_premium !~ '[0-9]' THEN NULL
@@ -55,18 +36,15 @@ SELECT
             ROUND((regexp_replace(annual_premium, '[^0-9.]', '', 'g'))::numeric, 2)
     END,
     status,
-    -- city_postal split: 'Paris_75001' -> 'Paris', '75001'
     split_part(city_postal, '_', 1),
     split_part(city_postal, '_', 2),
     risk_zone,
-    -- client_age: keep only numeric
     CASE
         WHEN client_age ~ '^[0-9]+(\.[0-9]+)?$' THEN client_age::numeric
         ELSE NULL
     END,
     channel,
     NULLIF(csp, ''),
-    -- gender normalization
     CASE
         WHEN gender IN ('M', 'Male')   THEN 'M'
         WHEN gender IN ('F', 'Female') THEN 'F'
@@ -86,18 +64,8 @@ INSERT INTO staging.claims (
 SELECT
     claim_id,
     contract_id,
-    CASE
-        WHEN occurrence_date ~ '^\d{4}-\d{2}-\d{2}$' THEN occurrence_date::date
-        WHEN occurrence_date ~ '^\d{2}/\d{2}/\d{4}$' THEN to_date(occurrence_date, 'DD/MM/YYYY')
-        WHEN occurrence_date ~ '^\d{2}-\d{2}-\d{4}$' THEN to_date(occurrence_date, 'DD-MM-YYYY')
-        ELSE NULL
-    END,
-    CASE
-        WHEN declaration_date ~ '^\d{4}-\d{2}-\d{2}$' THEN declaration_date::date
-        WHEN declaration_date ~ '^\d{2}/\d{2}/\d{4}$' THEN to_date(declaration_date, 'DD/MM/YYYY')
-        WHEN declaration_date ~ '^\d{2}-\d{2}-\d{4}$' THEN to_date(declaration_date, 'DD-MM-YYYY')
-        ELSE NULL
-    END,
+    staging.parse_date(occurrence_date),
+    staging.parse_date(declaration_date),
     claim_type,
     CASE
         WHEN damage_amount IS NULL OR damage_amount = '' THEN NULL
@@ -132,18 +100,15 @@ SELECT
     contract_id,
     brand,
     model,
-    -- year: '2018.0' -> 2018
     CASE
         WHEN year ~ '^[0-9]+(\.[0-9]+)?$' THEN year::numeric::integer
         ELSE NULL
     END,
-    -- power: same treatment
     CASE
         WHEN power ~ '^[0-9]+(\.[0-9]+)?$' THEN power::numeric::integer
         ELSE NULL
     END,
     fuel_type,
-    -- current_value_eur
     CASE
         WHEN current_value IS NULL OR current_value = '' THEN NULL
         WHEN current_value !~ '[0-9]' THEN NULL
@@ -154,7 +119,6 @@ SELECT
     END,
     NULLIF(color, ''),
     usage,
-    -- previous_claims: '1.0' -> 1
     CASE
         WHEN previous_claims ~ '^[0-9]+(\.[0-9]+)?$' THEN previous_claims::numeric::integer
         ELSE NULL
