@@ -1,10 +1,10 @@
 -- ============================================================
 -- 00_setup / 01_create_database.sql
--- Création de la base de données et des schémas
--- Phase 3 — Préparation de l'environnement local
+-- Create database and schemas
+-- Phase 3 — Local environment setup
 -- ============================================================
 
--- À exécuter en tant que superutilisateur postgres :
+-- Run as postgres superuser:
 --   sudo -u postgres psql
 
 CREATE DATABASE insurance_analytics
@@ -13,7 +13,7 @@ CREATE DATABASE insurance_analytics
        LC_CTYPE 'en_US.UTF-8'
        TEMPLATE template0;
 
--- Puis se connecter à la base :
+-- Then connect to the database:
 --   \c insurance_analytics
 
 CREATE SCHEMA raw;

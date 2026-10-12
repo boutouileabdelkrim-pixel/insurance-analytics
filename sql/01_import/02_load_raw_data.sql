@@ -1,15 +1,14 @@
 -- ============================================================
 -- 01_import / 02_load_raw_data.sql
--- Import des CSV dans les tables raw via COPY
--- Phase 4 — Importation des données
+-- Import CSV files into raw tables via COPY
+-- Phase 4 — Data import
 -- ============================================================
 --
--- Prérequis :
---   1. Les fichiers CSV doivent être accessibles par l'utilisateur
---      système 'postgres'. Copier les fichiers dans /tmp/raw_import/
---      puis : sudo chown postgres:postgres /tmp/raw_import/*.csv
---   2. Se connecter à la base : psql -d insurance_analytics
-
+-- Prerequisites:
+--   1. CSV files must be accessible by the 'postgres' system user.
+--      Copy them to /tmp/raw_import/ then:
+--        sudo chown postgres:postgres /tmp/raw_import/*.csv
+--   2. Connect to the database: psql -d insurance_analytics
 COPY raw.contracts
 FROM '/tmp/raw_import/contracts.csv'
 WITH (FORMAT csv, HEADER true, ENCODING 'UTF8', DELIMITER ',');

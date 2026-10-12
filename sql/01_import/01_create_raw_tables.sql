@@ -1,10 +1,10 @@
 -- ============================================================
 -- 01_import / 01_create_raw_tables.sql
--- Création des tables brutes dans le schéma raw
--- Phase 4 — Importation des données
+-- Create raw tables in the raw schema
+-- Phase 4 — Data import
 -- ============================================================
 
--- Connexion : psql -d insurance_analytics
+-- Connect: psql -d insurance_analytics
 
 -- Table raw.contracts (14 colonnes)
 CREATE TABLE raw.contracts (
